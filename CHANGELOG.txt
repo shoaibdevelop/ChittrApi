@@ -1,0 +1,22 @@
+CHANGELOG
+
+VERSION: Server v6
+1. Fixed typo in POST /chits/id/photo. It was using the user ID instead of the chit ID.
+
+VERSION: Server v5
+1. Fixed the GET /chits endpoint so that it doesn't break when you are logged in. This literally meant adding a single space to a SQL query.
+
+VERSION: API v0.0.5 and Server v4
+1. Changed references to /updatephoto in specification to /photo
+2. When getting a users information, the server now returns the ID of the user as per the specification
+3. When getting a chits information, the spec and server now also return the chit id so that it can be used for working with images
+
+
+VERSION: API v0.0.4 and Server v3
+1. Typo on description of get chits photo. Was copied and pasted from the users profile photo
+2. Added ./config/config.js to .gitignore (Stop uploading your Mudfoot passwords to Github)
+3. Changed the GET /chits endpoint to include user data.
+
+Credit:
+- Emily Rogers
+- Jamie Edge.

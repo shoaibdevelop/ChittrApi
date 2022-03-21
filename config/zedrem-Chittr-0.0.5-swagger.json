@@ -1,0 +1,813 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "version" : "0.0.5",
+    "title" : "Chittr Microblogging Platorm",
+    "description" : "Chittr is a totally original, unique and non-plagiarised platform for microblogging. Users who sign up for an account can publish ‘Chits’ – short, textual based posts of no more than 141 characters. Users can also follow their friends and peers to keep updated with what their friends are Chitting about.",
+    "contact" : {
+      "name" : "Ashley Williams",
+      "email" : "ashley.williams@mmu.ac.uk"
+    }
+  },
+  "servers" : [ {
+    "description" : "Local server",
+    "url" : "https://localhost:3333/api/v0.0.5"
+  } ],
+  "paths" : {
+    "/user" : {
+      "post" : {
+        "tags" : [ "User Management" ],
+        "summary" : "Create an account",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PostUser"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad request"
+          }
+        }
+      }
+    },
+    "/login" : {
+      "post" : {
+        "tags" : [ "User Management" ],
+        "summary" : "Login to an account",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginUser"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid email/password supplied"
+          }
+        }
+      }
+    },
+    "/logout" : {
+      "post" : {
+        "tags" : [ "User Management" ],
+        "summary" : "Logout of an account",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          }
+        }
+      }
+    },
+    "/user/{id}" : {
+      "get" : {
+        "tags" : [ "User Management" ],
+        "summary" : "View details of a single user",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DetailedUser"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      },
+      "delete" : {
+        "deprecated" : true,
+        "tags" : [ "User Management" ],
+        "summary" : "Delete a users account",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "Not found"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "User Management" ],
+        "summary" : "Update a users account",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "OK"
+          },
+          "404" : {
+            "description" : "Not found"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          }
+        }
+      }
+    },
+    "/user/{id}/photo" : {
+      "get" : {
+        "tags" : [ "User Management" ],
+        "summary" : "get a users account photo",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "image/png" : {
+                "schema" : {
+                  "type" : "string",
+                  "format" : "binary"
+                }
+              },
+              "image/jpeg" : {
+                "schema" : {
+                  "type" : "string",
+                  "format" : "binary"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request"
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
+    },
+    "/user/photo" : {
+      "post" : {
+        "tags" : [ "User Management" ],
+        "summary" : "Update a users account photo",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "requestBody" : {
+          "content" : {
+            "image/png" : {
+              "schema" : {
+                "type" : "string",
+                "format" : "binary",
+                "example" : "Raw content of PNG image file"
+              }
+            },
+            "image/jpeg" : {
+              "schema" : {
+                "type" : "string",
+                "format" : "binary",
+                "example" : "Raw content of JPEG image file"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad request"
+          },
+          "404" : {
+            "description" : "Not found"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          }
+        }
+      }
+    },
+    "/chits" : {
+      "get" : {
+        "tags" : [ "Posting Chits" ],
+        "summary" : "Get Chits from followed users i.e. the homepage",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "start",
+          "description" : "Number of items to skip before returning result",
+          "schema" : {
+            "type" : "integer",
+            "minimum" : 0
+          }
+        }, {
+          "in" : "query",
+          "name" : "count",
+          "description" : "Number of items to return",
+          "schema" : {
+            "type" : "integer",
+            "minimum" : 1
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ListChits"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Posting Chits" ],
+        "summary" : "Create a post",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SingleChit"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          }
+        }
+      }
+    },
+    "/chits/{id}/photo" : {
+      "get" : {
+        "tags" : [ "Posting Chits" ],
+        "summary" : "Get a chits photo",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "image/png" : {
+                "schema" : {
+                  "type" : "string",
+                  "format" : "binary"
+                }
+              },
+              "image/jpeg" : {
+                "schema" : {
+                  "type" : "string",
+                  "format" : "binary"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request"
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Posting Chits" ],
+        "summary" : "Upload a photo to a chit",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "requestBody" : {
+          "content" : {
+            "image/png" : {
+              "schema" : {
+                "type" : "string",
+                "format" : "binary",
+                "example" : "Raw content of PNG image file"
+              }
+            },
+            "image/jpeg" : {
+              "schema" : {
+                "type" : "string",
+                "format" : "binary",
+                "example" : "Raw content of JPEG image file"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad request"
+          },
+          "404" : {
+            "description" : "Not found"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          }
+        }
+      }
+    },
+    "/search_user" : {
+      "get" : {
+        "tags" : [ "Follower Management" ],
+        "summary" : "Search for a user",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/q"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ListUsers"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}/follow" : {
+      "post" : {
+        "tags" : [ "Follower Management" ],
+        "summary" : "Follow a user with a specific ID",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Follower Management" ],
+        "summary" : "Unfollow a user with a specific ID",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
+    },
+    "/user/{id}/followers" : {
+      "get" : {
+        "tags" : [ "Follower Management" ],
+        "summary" : "View the list of followers for a user with a specific ID",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ListUsers"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
+    },
+    "/user/{id}/following" : {
+      "get" : {
+        "tags" : [ "Follower Management" ],
+        "summary" : "View the list of users that a specific user is following",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ListUsers"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
+    },
+    "/user/{id}/block" : {
+      "get" : {
+        "deprecated" : true,
+        "tags" : [ "Follower Management" ],
+        "summary" : "Block a user from following the logged in user",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/id"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
+    },
+    "/chits/hashtagsearch" : {
+      "post" : {
+        "deprecated" : true,
+        "tags" : [ "Hashtagging" ],
+        "summary" : "Search for a hashtag",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/q"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ListChits"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chits/{hashtag}" : {
+      "get" : {
+        "deprecated" : true,
+        "tags" : [ "Hashtagging" ],
+        "summary" : "View Chits relating to a single hashtag",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/hashtag"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ListChits"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chits/{hashtag}/follow" : {
+      "post" : {
+        "deprecated" : true,
+        "tags" : [ "Hashtagging" ],
+        "summary" : "Follow a hashtag",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/hashtag"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
+    },
+    "/chits/{hashtag}/unfollow" : {
+      "post" : {
+        "deprecated" : true,
+        "tags" : [ "Hashtagging" ],
+        "summary" : "Unfollow a hashtag",
+        "security" : [ {
+          "User" : [ ]
+        } ],
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/hashtag"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "parameters" : {
+      "id" : {
+        "name" : "id",
+        "in" : "path",
+        "description" : "A unique integer ID",
+        "required" : true,
+        "schema" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "hashtag" : {
+        "name" : "hashtag",
+        "in" : "path",
+        "description" : "Hashtag",
+        "required" : true,
+        "schema" : {
+          "type" : "string",
+          "format" : "string"
+        }
+      },
+      "q" : {
+        "name" : "q",
+        "in" : "query",
+        "description" : "Seach string",
+        "required" : true,
+        "schema" : {
+          "type" : "string",
+          "format" : "string"
+        }
+      },
+      "followid" : {
+        "name" : "followid",
+        "in" : "query",
+        "description" : "Another users ID",
+        "required" : true,
+        "schema" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      }
+    },
+    "schemas" : {
+      "User" : {
+        "type" : "object",
+        "properties" : {
+          "given_name" : {
+            "type" : "string"
+          },
+          "family_name" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PostUser" : {
+        "type" : "object",
+        "properties" : {
+          "given_name" : {
+            "type" : "string"
+          },
+          "family_name" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "given_name", "family_name", "email", "password" ]
+      },
+      "LoginUser" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "email", "password" ]
+      },
+      "LoginResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "description" : "The ID of the logged in user",
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "token" : {
+            "description" : "A token to be used to verify future calls",
+            "type" : "string"
+          }
+        }
+      },
+      "Location" : {
+        "type" : "object",
+        "properties" : {
+          "longitude" : {
+            "type" : "number"
+          },
+          "latitude" : {
+            "type" : "number"
+          }
+        }
+      },
+      "SingleChit" : {
+        "type" : "object",
+        "properties" : {
+          "chit_id" : {
+            "type" : "integer"
+          },
+          "timestamp" : {
+            "type" : "integer"
+          },
+          "chit_content" : {
+            "type" : "string"
+          },
+          "location" : {
+            "$ref" : "#/components/schemas/Location"
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/ViewUser"
+          }
+        },
+        "required" : [ "timestamp", "chit_content" ]
+      },
+      "ListChits" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/SingleChit"
+        }
+      },
+      "ViewUser" : {
+        "type" : "object",
+        "properties" : {
+          "user_id" : {
+            "type" : "number"
+          },
+          "given_name" : {
+            "type" : "string"
+          },
+          "family_name" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          }
+        }
+      },
+      "DetailedUser" : {
+        "type" : "object",
+        "properties" : {
+          "user_id" : {
+            "type" : "number"
+          },
+          "given_name" : {
+            "type" : "string"
+          },
+          "family_name" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "recent_chits" : {
+            "$ref" : "#/components/schemas/ListChits"
+          }
+        }
+      },
+      "ListUsers" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/ViewUser"
+        }
+      }
+    },
+    "securitySchemes" : {
+      "User" : {
+        "type" : "apiKey",
+        "name" : "X-Authorization",
+        "in" : "header"
+      }
+    }
+  },
+  "tags" : [ {
+    "name" : "User Management",
+    "description" : "Endpoints concerned with a user managing their own account"
+  }, {
+    "name" : "Posting Chits",
+    "description" : "Endpoints concerned with the posting and managing of Chits"
+  }, {
+    "name" : "Follower Management",
+    "description" : "Endpoints concerned with managing followers and users that the user calling is following"
+  }, {
+    "name" : "Hashtagging",
+    "description" : "Endpoints concerned with following hashtags"
+  } ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Chittr-API",
+  "version": "0.0.6",
+  "license": "MIT",
+  "repository": "https://github.com/zedrem/chittr",
+  "scripts": {
+    "start": "node server.js",
+    "test": "mocha  ./tests/test.*.js --reporter spec --log-level=warn --timeout 30000",
+    "database": "mocha  ./tests/database.refresh.js --reporter spec --log-level=warn --timeout 30000"
+  },
+  "dependencies": {
+    "bunyan": "^1.8.12",
+    "convict": "^5.1.0",
+    "email-validator": "^2.0.4",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "morgan": "^1.9.1",
+    "mysql": "^2.17.1",
+    "swagger-parameters": "^1.3.2",
+    "z-schema": "^4.1.1"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "mocha": "^5.0.4"
+  }
+}
